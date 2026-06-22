@@ -5,15 +5,19 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 
 export default function SignupPage() {
-
   const router = useRouter();
 
-  const [formData, setFormData] =
-    useState({
-      name: "",
-      email: "",
-      password: ""
-    });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -21,14 +25,15 @@ export default function SignupPage() {
     setFormData({
       ...formData,
       [e.target.name]:
-        e.target.value
+        e.target.value,
     });
   };
 
   const handleSignup =
     async () => {
-
       try {
+        setLoading(true);
+        setError("");
 
         const response =
           await axios.post(
@@ -44,24 +49,27 @@ export default function SignupPage() {
             "Signup successful"
           );
 
-          router.push(
-            "/auth"
+          router.push("/auth");
+        } else {
+          setError(
+            response.data.message
           );
         }
-
-      } catch (error) {
+      } catch (error: any) {
         console.error(error);
+
+        setError(
+          error?.response?.data?.message ||
+          "Signup failed"
+        );
+      } finally {
+        setLoading(false);
       }
-  };
+    };
 
   return (
-  <div className="space-y-4">
-
-      <div
-        className="
-          space-y-4
-        "
-      >
+    <div className="space-y-4">
+      <div className="space-y-4">
 
         <h1
           className="
@@ -95,8 +103,15 @@ export default function SignupPage() {
           onChange={handleChange}
         />
 
+        {error && (
+          <p className="text-red-500 text-sm">
+            {error}
+          </p>
+        )}
+
         <button
           onClick={handleSignup}
+          disabled={loading}
           className="
             w-full
             bg-black
@@ -105,11 +120,12 @@ export default function SignupPage() {
             rounded
           "
         >
-          Create Account
+          {loading
+            ? "Creating..."
+            : "Create Account"}
         </button>
 
       </div>
-
     </div>
   );
 }
