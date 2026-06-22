@@ -64,13 +64,18 @@ from pdf_generator import (
 # Load Trained Model, Scaler & SHAP Explainer
 # =====================================================
 
-with open("../models/best_model.pkl", "rb") as f:
+MODEL_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)),
+    "models"
+)
+
+with open(os.path.join(MODEL_DIR, "best_model.pkl"), "rb") as f:
     model = pickle.load(f)
 
-with open("../models/scaler.pkl", "rb") as f:
+with open(os.path.join(MODEL_DIR, "scaler.pkl"), "rb") as f:
     scaler = pickle.load(f)
 
-with open("../models/shap_explainer.pkl", "rb") as f:
+with open(os.path.join(MODEL_DIR, "shap_explainer.pkl"), "rb") as f:
     explainer = pickle.load(f)
 
 
@@ -659,9 +664,7 @@ def get_history(
     user=Depends(verify_token)
 ):
 
-    conn = sqlite3.connect(
-        "medtwin.db"
-    )
+    conn = sqlite3.connect(DB_PATH)
 
     cursor = conn.cursor()
 
@@ -705,9 +708,8 @@ def delete_history(
     user=Depends(verify_token)
 ):
 
-    conn = sqlite3.connect(
-        "medtwin.db"
-    )
+    conn = sqlite3.connect(DB_PATH)
+        
 
     cursor = conn.cursor()
 
@@ -742,9 +744,7 @@ def signup(
     user: UserSignup
 ):
 
-    conn = sqlite3.connect(
-        "medtwin.db"
-    )
+    conn = sqlite3.connect(DB_PATH)
 
     cursor = conn.cursor()
 
@@ -795,9 +795,7 @@ def login(
     user: UserLogin
 ):
 
-    conn = sqlite3.connect(
-        "medtwin.db"
-    )
+    conn = sqlite3.connect(DB_PATH)
 
     cursor = conn.cursor()
 
