@@ -12,22 +12,45 @@ DATABASE_URL = os.getenv(
     "DATABASE_URL"
 )
 
-if not DATABASE_URL:
-    DATABASE_URL = os.path.join(
+# Handle SQLite properly for both local + Render
+if DATABASE_URL and DATABASE_URL.startswith("sqlite:///"):
+    DB_PATH = DATABASE_URL.replace(
+        "sqlite:///",
+        ""
+    )
+else:
+    DB_PATH = os.path.join(
         BASE_DIR,
         "medtwin.db"
     )
 
+
 def create_db():
+    # Ensure directory exists
+    os.makedirs(
+        os.path.dirname(DB_PATH)
+        if os.path.dirname(DB_PATH)
+        else ".",
+        exist_ok=True
+    )
+
     conn = sqlite3.connect(
-        DATABASE_URL.replace(
-            "sqlite:///",
-            ""
-        )
+        DB_PATH
     )
 
     cursor = conn.cursor()
 
+    # Users table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
+        )
+    """)
+
+    # Predictions table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS predictions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,16 +64,8 @@ def create_db():
             ai_summary TEXT,
             recommendation TEXT,
             top_risk_factors TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            email TEXT UNIQUE,
-            password TEXT
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id)
         )
     """)
 
