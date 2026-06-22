@@ -675,7 +675,7 @@ def generate_report(data: ReportRequest):
     return {
     "status": "success",
     "download_url":
-        f"f{NEXT_PUBLIC_API_URL}/reports/{filename}"
+        f"{NEXT_PUBLIC_API_URL}/reports/{filename}"
 }
 @app.get("/history/{user_id}")
 def get_history(
