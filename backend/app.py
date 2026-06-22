@@ -126,7 +126,7 @@ os.makedirs(
 )
 app.mount(
     "/reports",
-    StaticFiles(directory="reports"),
+    StaticFiles(directory=REPORTS_DIR),
     name="reports"
 )
 # =====================================================
