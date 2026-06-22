@@ -151,6 +151,11 @@ export default function MedTwinLanding() {
           transform: translateY(-1px);
           box-shadow: 0 6px 24px rgba(0,212,255,0.5);
         }
+        .med-nav-actions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
 
         /* ── HERO ── */
         .med-hero {
@@ -471,14 +476,56 @@ export default function MedTwinLanding() {
         .med-visible { opacity: 1; transform: translateY(0); }
 
         /* Responsive */
-        @media (max-width: 768px) {
-          .med-nav-links { display: none; }
-          .med-steps { grid-template-columns: 1fr; }
-          .med-features-grid { grid-template-columns: 1fr; }
-          .med-feat-wide { flex-direction: column; grid-column: span 1; }
-          .med-stats { flex-wrap: wrap; }
-          .med-stat { min-width: 50%; border-right: none; border-bottom: 1px solid var(--border); }
-        }
+       @media (max-width: 768px) {
+      .med-nav-links {
+        display: none;
+      }
+
+      .med-nav {
+        padding: 0 14px;
+        height: auto;
+        min-height: 68px;
+      }
+
+      .med-nav-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .med-nav-cta,
+      .med-btn-ghost {
+        padding: 0.45rem 0.8rem;
+        font-size: 0.75rem;
+      }
+
+      .med-nav-logo {
+        font-size: 1rem;
+      }
+
+      .med-steps {
+        grid-template-columns: 1fr;
+      }
+
+      .med-features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .med-feat-wide {
+        flex-direction: column;
+        grid-column: span 1;
+      }
+
+      .med-stats {
+        flex-wrap: wrap;
+      }
+
+  .med-stat {
+    min-width: 50%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
         @media (prefers-reduced-motion: reduce) {
           *, *::before, *::after { animation-duration: 0.01ms !important; }
         }
@@ -529,13 +576,8 @@ export default function MedTwinLanding() {
   </ul>
 
   {/* Right Buttons */}
-  <div
-    style={{
-      display: "flex",
-      alignItems: "center",
-      gap: "10px"
-    }}
-  >
+  {/* Right Buttons */}
+<div className="med-nav-actions">
     <button
       className="med-btn-ghost"
       onClick={() => router.push("/dashboard")}

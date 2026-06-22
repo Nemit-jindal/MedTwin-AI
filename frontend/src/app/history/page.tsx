@@ -564,8 +564,10 @@ h-12
                 <div
   className="
     flex
-    gap-15
+    flex-wrap
+    gap-3
     mt-4
+    w-full
   "
 >
                 <Dialog>
@@ -573,15 +575,17 @@ h-12
   <DialogTrigger asChild>
 
     <Button
-      className="
-         h-10
-         px-4
-         bg-white
-    text-black
-    hover:bg-zinc-200
-    rounded-xl
-      "
-    >
+  className="
+     h-10
+     flex-1
+     min-w-[140px]
+     px-4
+     bg-white
+     text-black
+     hover:bg-zinc-200
+     rounded-xl
+  "
+>
       View Details
     </Button>
 
@@ -698,18 +702,17 @@ h-12
 </Dialog>
                 <Button
   variant="outline"
-  size="icon"
-
   onClick={() =>
     handleDelete(item.id)
   }
- className="
-     h-10
-  w-10
-  border-red-500
-  text-red-400
-  hover:bg-red-500/10
-  bg-transparent
+  className="
+    h-10
+    min-w-[40px]
+    w-10
+    border-red-500
+    text-red-400
+    hover:bg-red-500/10
+    bg-transparent
   "
 >
   <Trash2 className="h-4 w-4" />
