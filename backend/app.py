@@ -6,7 +6,6 @@ from fastapi.staticfiles import StaticFiles
 from database import create_db
 from dotenv import load_dotenv
 import os
-import sqlite3
 from jose import jwt
 from datetime import datetime, timedelta
 from fastapi import Header, Depends, HTTPException
@@ -18,10 +17,7 @@ BASE_DIR = os.path.dirname(
     os.path.abspath(__file__)
 )
 
-DB_PATH = os.path.join(
-    BASE_DIR,
-    "medtwin.db"
-)
+
 def verify_token(
     authorization: str = Header(...)
 ):
@@ -581,7 +577,8 @@ def predict( data: PatientData,
         "medtwin.db"
     )
 
-    conn = sqlite3.connect(DB_PATH)
+    from database import get_connection
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute(
@@ -686,7 +683,8 @@ def get_history(
     user=Depends(verify_token)
 ):
 
-    conn = sqlite3.connect(DB_PATH)
+    from database import get_connection
+    conn = get_connection()
 
     cursor = conn.cursor()
 
@@ -730,7 +728,8 @@ def delete_history(
     user=Depends(verify_token)
 ):
 
-    conn = sqlite3.connect(DB_PATH)
+    from database import get_connection
+    conn = get_connection()
         
 
     cursor = conn.cursor()
@@ -765,7 +764,8 @@ class UserLogin(BaseModel):
 def signup(user: UserSignup):
     email = user.email.lower().strip()
     try:
-        conn = sqlite3.connect(DB_PATH)
+        from database import get_connection
+        conn = get_connection()
         cursor = conn.cursor()
 
         password = user.password[:72]
@@ -806,7 +806,8 @@ def login(
 ):
     email = user.email.lower().strip()
 
-    conn = sqlite3.connect(DB_PATH)
+    from database import get_connection
+    conn = get_connection()
 
     cursor = conn.cursor()
 
