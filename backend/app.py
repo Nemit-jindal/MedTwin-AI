@@ -763,6 +763,7 @@ class UserLogin(BaseModel):
 
 @app.post("/signup")
 def signup(user: UserSignup):
+    email = user.email.lower().strip()
     try:
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
@@ -781,7 +782,7 @@ def signup(user: UserSignup):
             INSERT INTO users (name, email, password)
             VALUES (?, ?, ?)
             """,
-            (user.name, user.email, hashed_password)
+            (user.name, email, hashed_password)
         )
 
         conn.commit()
@@ -803,6 +804,7 @@ def signup(user: UserSignup):
 def login(
     user: UserLogin
 ):
+    email = user.email.lower().strip()
 
     conn = sqlite3.connect(DB_PATH)
 
@@ -814,7 +816,7 @@ def login(
     FROM users
     WHERE email = ?
         """,
-        (user.email,)
+        (email,)
     )
 
     db_user =cursor.fetchone()
