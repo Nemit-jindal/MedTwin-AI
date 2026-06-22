@@ -13,6 +13,15 @@ from fastapi import Header, Depends, HTTPException
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
+
+BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+)
+
+DB_PATH = os.path.join(
+    BASE_DIR,
+    "medtwin.db"
+)
 def verify_token(
     authorization: str = Header(...)
 ):
@@ -536,10 +545,17 @@ def predict( data: PatientData,
     # ==========================================
     # Response
     # ==========================================
-    conn = sqlite3.connect(
-       "medtwin.db"
-)
+    
+    BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+    )
 
+    DB_PATH = os.path.join(
+        BASE_DIR,
+        "medtwin.db"
+    )
+
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute(

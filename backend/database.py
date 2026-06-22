@@ -4,13 +4,26 @@ import os
 
 load_dotenv()
 
-import sqlite3
+BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+)
 
+DATABASE_URL = os.getenv(
+    "DATABASE_URL"
+)
+
+if not DATABASE_URL:
+    DATABASE_URL = os.path.join(
+        BASE_DIR,
+        "medtwin.db"
+    )
 
 def create_db():
-
     conn = sqlite3.connect(
-        os.getenv("DATABASE_URL")
+        DATABASE_URL.replace(
+            "sqlite:///",
+            ""
+        )
     )
 
     cursor = conn.cursor()
@@ -31,14 +44,15 @@ def create_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
+
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        email TEXT UNIQUE,
-        password TEXT
-    )
-""")
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            email TEXT UNIQUE,
+            password TEXT
+        )
+    """)
 
     conn.commit()
     conn.close()

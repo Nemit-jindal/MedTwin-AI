@@ -45,7 +45,7 @@ export default function SignupPage() {
           );
 
           router.push(
-            "/login"
+            "/auth"
           );
         }
 

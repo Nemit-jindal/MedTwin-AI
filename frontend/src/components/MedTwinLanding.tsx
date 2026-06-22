@@ -554,7 +554,7 @@ export default function MedTwinLanding() {
       className="med-nav-cta"
       onClick={() => router.push("/auth")}
     >
-      Login
+      Login/Signup
     </button>
   </div>
 
@@ -586,10 +586,10 @@ export default function MedTwinLanding() {
             AI-POWERED DIABETES RISK ANALYSIS
           </div>
 
-          <h1 className="med-headline">
+          <h2 className="med-headline">
            Predict Diabetes Risk
 Before It Gets Serious.
-          </h1>
+          </h2>
 
           <p className="med-sub">
             Upload your health metrics, analyze diabetes risk with machine learning,
