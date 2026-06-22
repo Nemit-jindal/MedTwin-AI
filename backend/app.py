@@ -667,10 +667,8 @@ def generate_report(data: ReportRequest):
             data.dict()
         )
 
-        BACKEND_URL = os.getenv("BACKEND_URL")
-
         download_url = (
-            f"{BACKEND_URL}/reports/{filename}"
+            f"https://medtwin-ai-backend.onrender.com/reports/{filename}"
         )
 
         print("Generated file:", filename)
