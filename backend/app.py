@@ -93,6 +93,24 @@ app = FastAPI(
     description="AI-Powered Diabetes Risk Assessment API",
     version="1.0.0"
 )
+import os
+
+FRONTEND_URL = os.getenv("FRONTEND_URL")
+
+from fastapi.middleware.cors import CORSMiddleware
+
+origins = [
+    "http://localhost:3000",
+    "https://med-twin-ai-silk.vercel.app",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 create_db()
 
 import os
@@ -115,24 +133,7 @@ app.mount(
 # CORS Configuration
 # =====================================================
 
-import os
 
-FRONTEND_URL = os.getenv("FRONTEND_URL")
-
-from fastapi.middleware.cors import CORSMiddleware
-
-origins = [
-    "http://localhost:3000",
-    "https://med-twin-ai-silk.vercel.app",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 # =====================================================
 # Upload Configuration
 # =====================================================
