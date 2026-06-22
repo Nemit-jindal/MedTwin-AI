@@ -662,21 +662,33 @@ def predict( data: PatientData,
 @app.post("/generate-report")
 def generate_report(data: ReportRequest):
 
-    filepath = generate_pdf_report(
-        data.dict()
-    )
+    try:
+        filename = generate_pdf_report(
+            data.dict()
+        )
 
-    import os
+        BACKEND_URL = os.getenv("BACKEND_URL")
 
-    filename = os.path.basename(
-    filepath
-)
-    NEXT_PUBLIC_API_URL = os.getenv("BACKEND_URL")
-    return {
-    "status": "success",
-    "download_url":
-        f"{NEXT_PUBLIC_API_URL}/reports/{filename}"
-}
+        download_url = (
+            f"{BACKEND_URL}/reports/{filename}"
+        )
+
+        print("Generated file:", filename)
+        print("Download URL:", download_url)
+
+        return {
+            "status": "success",
+            "filename": filename,
+            "download_url": download_url
+        }
+
+    except Exception as e:
+        print("REPORT ERROR:", e)
+
+        return {
+            "status": "error",
+            "message": str(e)
+        }
 @app.get("/history/{user_id}")
 def get_history(
     user_id: int,
