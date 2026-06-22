@@ -595,7 +595,7 @@ def predict( data: PatientData,
         recommendation,
         top_risk_factors
     )
-    VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (%s,%s, %s, %s, %s, %s, %s, %s, %s, %s)
     """,
     (   data.user_id,
         "Diabetic"
@@ -692,7 +692,7 @@ def get_history(
     """
     SELECT *
     FROM predictions
-    WHERE user_id = ?
+    WHERE user_id = %s
     ORDER BY created_at DESC
     """,
     (user_id,)
@@ -737,7 +737,7 @@ def delete_history(
     cursor.execute(
         """
         DELETE FROM predictions
-        WHERE id = ?
+        WHERE id = %s
         """,
         (prediction_id,)
     )
@@ -780,7 +780,7 @@ def signup(user: UserSignup):
         cursor.execute(
             """
             INSERT INTO users (name, email, password)
-            VALUES (?, ?, ?)
+            VALUES (%s, %s, %s)
             """,
             (user.name, email, hashed_password)
         )
@@ -815,7 +815,7 @@ def login(
         """
          SELECT id, name, email, password
     FROM users
-    WHERE email = ?
+    WHERE email = %s
         """,
         (email,)
     )
