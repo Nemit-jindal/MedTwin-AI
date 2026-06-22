@@ -82,7 +82,8 @@ with open(os.path.join(MODEL_DIR, "shap_explainer.pkl"), "rb") as f:
 
 pwd_context = CryptContext(
     schemes=["bcrypt"],
-    deprecated="auto"
+    deprecated="auto",
+    bcrypt__truncate_error=False
 )
 # =====================================================
 # FastAPI App
@@ -96,6 +97,10 @@ app = FastAPI(
 import os
 
 FRONTEND_URL = os.getenv("FRONTEND_URL")
+# =====================================================
+# CORS Configuration
+# =====================================================
+
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -129,10 +134,6 @@ app.mount(
     StaticFiles(directory=REPORTS_DIR),
     name="reports"
 )
-# =====================================================
-# CORS Configuration
-# =====================================================
-
 
 # =====================================================
 # Upload Configuration
@@ -673,10 +674,11 @@ def generate_report(data: ReportRequest):
     filename = os.path.basename(
     filepath
 )
+    NEXT_PUBLIC_API_URL = os.getenv("BACKEND_URL")
     return {
     "status": "success",
     "download_url":
-        f"http://127.0.0.1:8000/reports/{filename}"
+        f"f{NEXT_PUBLIC_API_URL}/reports/{filename}"
 }
 @app.get("/history/{user_id}")
 def get_history(
@@ -760,55 +762,42 @@ class UserLogin(BaseModel):
     password: str
 
 @app.post("/signup")
-def signup(
-    user: UserSignup
-):
-
-    conn = sqlite3.connect(DB_PATH)
-
-    cursor = conn.cursor()
-
-    hashed_password =pwd_context.hash(
-            user.password
-        )
-
+def signup(user: UserSignup):
     try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
 
+        password = user.password[:72]
+        if len(user.password.encode()) > 72:
+            raise HTTPException(
+                status_code=400,
+                detail="Password must be 72 characters or less"
+            )
+        hashed_password = pwd_context.hash(
+            password
+)
         cursor.execute(
             """
-            INSERT INTO users (
-                name,
-                email,
-                password
-            )
+            INSERT INTO users (name, email, password)
             VALUES (?, ?, ?)
             """,
-            (
-                user.name,
-                user.email,
-                hashed_password
-            )
+            (user.name, user.email, hashed_password)
         )
 
         conn.commit()
-
-    except:
-
         conn.close()
 
         return {
-            "status": "error",
-            "message":
-                "User already exists"
+            "status": "success",
+            "message": "Signup successful"
         }
 
-    conn.close()
-
-    return {
-        "status": "success",
-        "message":
-            "Signup successful"
-    }
+    except Exception as e:
+        print("SIGNUP ERROR:", str(e))
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 
 @app.post("/login")
 def login(
@@ -846,7 +835,7 @@ def login(
     hashed_password = db_user[3]
 
     if not pwd_context.verify(
-        user.password,
+        user.password[:72],
         hashed_password
     ):
 
