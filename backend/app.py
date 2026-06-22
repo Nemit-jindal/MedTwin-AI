@@ -94,6 +94,18 @@ app = FastAPI(
     version="1.0.0"
 )
 create_db()
+
+import os
+
+REPORTS_DIR = os.path.join(
+    os.path.dirname(__file__),
+    "reports"
+)
+
+os.makedirs(
+    REPORTS_DIR,
+    exist_ok=True
+)
 app.mount(
     "/reports",
     StaticFiles(directory="reports"),
