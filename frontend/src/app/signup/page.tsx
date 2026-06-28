@@ -4,7 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-export default function SignupPage() {
+export default function SignupPage({
+  setError,
+}: {
+  setError: (msg: string) => void;
+}) {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -15,9 +19,6 @@ export default function SignupPage() {
 
   const [loading, setLoading] =
     useState(false);
-
-  const [error, setError] =
-    useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -33,11 +34,16 @@ export default function SignupPage() {
     async () => {
       try {
         setLoading(true);
+
+        // Clear previous errors
         setError("");
 
         const response =
           await axios.post(
-            `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"}/signup`,
+            `${
+              process.env.NEXT_PUBLIC_API_URL ||
+              "http://127.0.0.1:8000"
+            }/signup`,
             formData
           );
 
@@ -52,7 +58,8 @@ export default function SignupPage() {
           router.push("/auth");
         } else {
           setError(
-            response.data.message
+            response.data.message ||
+              "Signup failed"
           );
         }
       } catch (error: any) {
@@ -60,7 +67,7 @@ export default function SignupPage() {
 
         setError(
           error?.response?.data?.message ||
-          "Signup failed"
+            "Signup failed"
         );
       } finally {
         setLoading(false);
@@ -102,12 +109,6 @@ export default function SignupPage() {
           className="w-full border p-3 rounded"
           onChange={handleChange}
         />
-
-        {error && (
-          <p className="text-red-500 text-sm">
-            {error}
-          </p>
-        )}
 
         <button
           onClick={handleSignup}

@@ -493,7 +493,7 @@ def predict( data: PatientData,
 
     top_risk_factors = []
 
-    for feature, _ in sorted_features:
+    for feature, impact in sorted_features:
 
         if feature not in filled_fields:
             continue
@@ -505,10 +505,9 @@ def predict( data: PatientData,
             continue
 
         top_risk_factors.append(
-            feature_display_names[
-                feature
-            ]
-        )
+        f"{feature_display_names[feature]} "
+        f"({round(float(impact), 2)})"
+    )
 
         if len(top_risk_factors) == 3:
             break
@@ -772,27 +771,51 @@ class UserLogin(BaseModel):
 
 @app.post("/signup")
 def signup(user: UserSignup):
-    email = user.email.lower().strip()
+
     try:
         from database import get_connection
+
         conn = get_connection()
         cursor = conn.cursor()
 
-        password = user.password[:72]
+        email = user.email.lower().strip()
+
+        # Check if user already exists
+        cursor.execute(
+            "SELECT * FROM users WHERE email = %s",
+            (email,)
+        )
+
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+            conn.close()
+            return {
+                "status": "error",
+                "message": "User already exists"
+            }
+
+        # Password validation
         if len(user.password.encode()) > 72:
             raise HTTPException(
                 status_code=400,
-                detail="Password must be 72 characters or less"
+                detail="Password must be 72 bytes or less"
             )
+
         hashed_password = pwd_context.hash(
-            password
-)
+            user.password[:72]
+        )
+
         cursor.execute(
             """
             INSERT INTO users (name, email, password)
             VALUES (%s, %s, %s)
             """,
-            (user.name, email, hashed_password)
+            (
+                user.name,
+                email,
+                hashed_password
+            )
         )
 
         conn.commit()
@@ -805,6 +828,7 @@ def signup(user: UserSignup):
 
     except Exception as e:
         print("SIGNUP ERROR:", str(e))
+
         raise HTTPException(
             status_code=500,
             detail=str(e)

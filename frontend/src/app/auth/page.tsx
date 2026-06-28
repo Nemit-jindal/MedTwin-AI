@@ -5,17 +5,19 @@ import LoginPage from "../login/page";
 import SignupPage from "../signup/page";
 
 export default function AuthPage() {
-  const [mode, setMode] = useState("login");
+  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [error, setError] = useState("");
 
   return (
-   <main className="min-h-screen bg-black text-white relative overflow-x-hidden overflow-y-auto">
+    <main className="min-h-screen bg-black text-white relative overflow-x-hidden overflow-y-auto">
       {/* Background Glow */}
       <div className="absolute top-20 left-20 w-72 h-72 bg-cyan-500/20 blur-[120px] rounded-full" />
       <div className="absolute bottom-20 right-20 w-72 h-72 bg-blue-600/20 blur-[120px] rounded-full" />
 
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] min-h-screen">
+        
         {/* Left Side */}
-       <section className="flex flex-col justify-start pt-16 lg:pt-28 px-6 lg:px-10 max-w-md mx-auto h-full">
+        <section className="flex flex-col justify-start pt-16 lg:pt-28 px-6 lg:px-10 max-w-md mx-auto h-full">
           <p className="text-cyan-400 uppercase tracking-[0.25em] text-sm mb-4">
             Secure Access
           </p>
@@ -58,9 +60,14 @@ export default function AuthPage() {
         {/* Right Side */}
         <section className="flex justify-center pt-6 lg:pt-10 px-4 lg:px-12 pb-10">
           <div className="w-full max-w-lg bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col justify-start">
+
+            {/* Tabs */}
             <div className="flex bg-zinc-900 rounded-2xl p-1 mb-6">
               <button
-                onClick={() => setMode("login")}
+                onClick={() => {
+                  setMode("login");
+                  setError("");
+                }}
                 className={`flex-1 py-3 rounded-xl transition ${
                   mode === "login"
                     ? "bg-cyan-500 text-black font-semibold"
@@ -71,7 +78,10 @@ export default function AuthPage() {
               </button>
 
               <button
-                onClick={() => setMode("signup")}
+                onClick={() => {
+                  setMode("signup");
+                  setError("");
+                }}
                 className={`flex-1 py-3 rounded-xl transition ${
                   mode === "signup"
                     ? "bg-cyan-500 text-black font-semibold"
@@ -82,7 +92,19 @@ export default function AuthPage() {
               </button>
             </div>
 
-            {mode === "login" ? <LoginPage /> : <SignupPage />}
+            {/* Error Display */}
+            {error && (
+              <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+                {error}
+              </div>
+            )}
+
+            {/* Forms */}
+            {mode === "login" ? (
+              <LoginPage setError={setError} />
+            ) : (
+              <SignupPage setError={setError} />
+            )}
           </div>
         </section>
       </div>
